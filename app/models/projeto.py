@@ -4,6 +4,9 @@ from sqlalchemy.orm import relationship
 from app.database import Base
 from sqlalchemy import Enum
 from app.core.enums import StatusProjeto
+from sqlalchemy import DateTime
+from datetime import datetime
+
 
 
 class Projeto(Base):
@@ -14,11 +17,15 @@ class Projeto(Base):
     descricao = Column(String)
 
     status = Column(
-    Enum(StatusProjeto),
-    default=StatusProjeto.ativo,
-    nullable=False
-)
+        Enum(StatusProjeto),
+        default=StatusProjeto.ativo,
+        nullable=False
+    )
 
+    data_criacao = Column(DateTime, default=datetime.utcnow)
+    data_atualizacao = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     usuario_id = Column(Integer, ForeignKey("usuarios.id"))
     usuario = relationship("Usuario", back_populates="projetos")
+
+

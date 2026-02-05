@@ -1,4 +1,14 @@
 fastapi
+
+alembic
+# Dependências úteis
+httpx
+python-jose[cryptography]
+uvicorn
+sqlalchemy
+pydantic
+passlib[bcrypt]
+email-validator
 uvicorn
 sqlalchemy
 pydantic

@@ -29,7 +29,8 @@ from jose import JWTError
 from app.database import SessionLocal
 from app.models.usuario import Usuario
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/usuarios/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="usuarios/login")
+
 
 def get_usuario_logado(token: str = Depends(oauth2_scheme)):
     try:
