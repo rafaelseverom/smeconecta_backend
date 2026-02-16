@@ -1,6 +1,6 @@
 # Esse schema define como os dados entram e saem pela API
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from app.core.enums import StatusProjeto
 
@@ -18,6 +18,4 @@ class ProjetoUpdate(ProjetoBase):
 
 class ProjetoOut(ProjetoBase):
     id: int
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

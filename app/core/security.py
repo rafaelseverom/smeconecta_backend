@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from jose import jwt
 import hashlib
 from app.core.config import SECRET_KEY, ALGORITHM
@@ -19,8 +19,8 @@ def verificar_senha(senha_plana: str, hash_senha: str) -> bool:
 
 def criar_token(dados: dict, expires_delta: timedelta | None = None):
     to_encode = dados.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
-    to_encode.update({"exp": expire})
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=15))
+    to_encode.update({"exp": int(expire.timestamp())})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 from fastapi import Depends, HTTPException, status
