@@ -23,6 +23,7 @@ def get_db():
     finally:
         db.close()
 
+
 @router.post("/", response_model=ProjetoOut)
 def criar_projeto(
     projeto: ProjetoCreate,
@@ -134,4 +135,11 @@ def deletar_projeto(
     db.delete(projeto_db)
     db.commit()
     return {"message": "Projeto deletado com sucesso"}
+
+@router.get("/debug/banco")
+def ver_banco(
+    db: Session = Depends(get_db)
+):
+    projetos = db.query(Projeto).all()
+    return projetos
 

@@ -1,0 +1,98 @@
+{
+  "projetos": {
+    "colunas": [
+      {
+        "nome": "id",
+        "tipo": "INTEGER",
+        "nao_nulo": true,
+        "valor_padrao": null,
+        "chave_primaria": true
+      },
+      {
+        "nome": "nome",
+        "tipo": "VARCHAR",
+        "nao_nulo": false,
+        "valor_padrao": null,
+        "chave_primaria": false
+      },
+      {
+        "nome": "descricao",
+        "tipo": "VARCHAR",
+        "nao_nulo": false,
+        "valor_padrao": null,
+        "chave_primaria": false
+      },
+      {
+        "nome": "status",
+        "tipo": "TEXT",
+        "nao_nulo": false,
+        "valor_padrao": "'ativo'",
+        "chave_primaria": false
+      },
+      {
+        "nome": "data_criacao",
+        "tipo": "TEXT",
+        "nao_nulo": false,
+        "valor_padrao": "datetime('now')",
+        "chave_primaria": false
+      },
+      {
+        "nome": "data_atualizacao",
+        "tipo": "TEXT",
+        "nao_nulo": false,
+        "valor_padrao": "datetime('now')",
+        "chave_primaria": false
+      },
+      {
+        "nome": "usuario_id",
+        "tipo": "INTEGER",
+        "nao_nulo": false,
+        "valor_padrao": null,
+        "chave_primaria": false
+      }
+    ]
+  },
+  "usuarios": {
+    "colunas": [
+      {
+        "nome": "id",
+        "tipo": "INTEGER",
+        "nao_nulo": true,
+        "valor_padrao": null,
+        "chave_primaria": true
+      },
+      {
+        "nome": "nome",
+        "tipo": "VARCHAR",
+        "nao_nulo": true,
+        "valor_padrao": null,
+        "chave_primaria": false
+      },
+      {
+        "nome": "email",
+        "tipo": "VARCHAR",
+        "nao_nulo": true,
+        "valor_padrao": null,
+        "chave_primaria": false
+      },
+      {
+        "nome": "senha",
+        "tipo": "VARCHAR",
+        "nao_nulo": true,
+        "valor_padrao": null,
+        "chave_primaria": false
+      }
+    ]
+  },
+  "alembic_version": {
+    "colunas": [
+      {
+        "nome": "version_num",
+        "tipo": "VARCHAR(32)",
+        "nao_nulo": true,
+        "valor_padrao": null,
+        "chave_primaria": true
+      }
+    ]
+  }
+}
