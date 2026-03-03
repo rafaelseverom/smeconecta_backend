@@ -42,12 +42,14 @@ def criar_projeto(
     db.refresh(novo_projeto)
     return novo_projeto
 
-@router.get("/")
+@router.get("/", response_model=list[ProjetoOut])
 def listar_projetos(
     pagina: int = Query(1, ge=1),
     limite: int = Query(10, ge=1, le=100),
     ordem: str = Query("desc"),
     status: Optional[StatusProjeto] = Query(None),
+    nome: Optional[str] = Query(None),
+
     usuario: Usuario = Depends(get_usuario_logado),
     db: Session = Depends(get_db)
 ):
@@ -55,17 +57,21 @@ def listar_projetos(
         Projeto.usuario_id == usuario.id
     )
 
-    # FILTRO POR STATUS
+    # filtro status
     if status:
         query = query.filter(Projeto.status == status)
 
-    # ORDENAÇÃO
+    # busca por nome
+    if nome:
+        query = query.filter(Projeto.nome.ilike(f"%{nome}%"))
+
+    # ordenação
     if ordem == "desc":
         query = query.order_by(desc(Projeto.data_criacao))
     else:
         query = query.order_by(asc(Projeto.data_criacao))
 
-    # PAGINAÇÃO
+    # paginação
     offset = (pagina - 1) * limite
     projetos = query.offset(offset).limit(limite).all()
 
@@ -143,3 +149,29 @@ def ver_banco(
     projetos = db.query(Projeto).all()
     return projetos
 
+@router.get("/stats")
+def estatisticas_projetos(
+    usuario: Usuario = Depends(get_usuario_logado),
+    db: Session = Depends(get_db)
+):
+    base_query = db.query(Projeto).filter(
+        Projeto.usuario_id == usuario.id
+    )
+
+    total = base_query.count()
+    ativos = base_query.filter(Projeto.status == StatusProjeto.ativo).count()
+    pausados = base_query.filter(Projeto.status == StatusProjeto.pausado).count()
+    concluidos = base_query.filter(Projeto.status == StatusProjeto.concluido).count()
+
+    return {
+        "total": total,
+        "ativos": ativos,
+        "pausados": pausados,
+        "concluidos": concluidos
+    }
+
+@router.get("/debug-tabelas")
+def debug_tabelas(db: Session = Depends(get_db)):
+    from sqlalchemy import inspect
+    inspector = inspect(db.bind)
+    return inspector.get_table_names()

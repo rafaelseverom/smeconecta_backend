@@ -15,7 +15,7 @@ class Projeto(Base):
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, index=True)
     descricao = Column(String)
-
+    tarefas = relationship("Tarefa", back_populates="projeto", cascade="all, delete")
     status = Column(
         Enum(StatusProjeto),
         default=StatusProjeto.ativo,
