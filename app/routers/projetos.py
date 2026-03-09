@@ -13,7 +13,6 @@ from typing import Optional
 
 
 
-
 router = APIRouter(prefix="/projetos", tags=["Projetos"])
 
 def get_db():
@@ -23,24 +22,25 @@ def get_db():
     finally:
         db.close()
 
-
 @router.post("/", response_model=ProjetoOut)
 def criar_projeto(
     projeto: ProjetoCreate,
     usuario: Usuario = Depends(get_usuario_logado),
     db: Session = Depends(get_db)
 ):
-    novo_projeto = Projeto(
+    # cria um novo projeto vinculado ao usuário autenticado
+    novo = Projeto(
         nome=projeto.nome,
         descricao=projeto.descricao,
         status=projeto.status,
         usuario_id=usuario.id
     )
 
-    db.add(novo_projeto)
+    db.add(novo)
     db.commit()
-    db.refresh(novo_projeto)
-    return novo_projeto
+    db.refresh(novo)
+
+    return novo
 
 @router.get("/", response_model=list[ProjetoOut])
 def listar_projetos(
@@ -78,21 +78,19 @@ def listar_projetos(
     return projetos
 
 
-
 @router.get("/{projeto_id}", response_model=ProjetoOut)
 def obter_projeto(
     projeto_id: int,
     usuario: Usuario = Depends(get_usuario_logado),
     db: Session = Depends(get_db)
 ):
-    projeto = db.query(Projeto).filter(Projeto.id == projeto_id).first()
+    projeto = db.query(Projeto).filter(
+        Projeto.id == projeto_id,
+        Projeto.usuario_id == usuario.id
+    ).first()
 
     if not projeto:
         raise HTTPException(status_code=404, detail="Projeto não encontrado")
-
-    # segurança → só dono pode ver
-    if projeto.usuario_id != usuario.id:
-        raise HTTPException(status_code=403, detail="Acesso negado")
 
     return projeto
 
@@ -101,27 +99,26 @@ def obter_projeto(
 @router.put("/{projeto_id}", response_model=ProjetoOut)
 def atualizar_projeto(
     projeto_id: int,
-    projeto: ProjetoCreate,
+    dados: ProjetoCreate,
     usuario: Usuario = Depends(get_usuario_logado),
     db: Session = Depends(get_db)
 ):
-    projeto_db = db.query(Projeto).filter(Projeto.id == projeto_id).first()
+    projeto = db.query(Projeto).filter(
+        Projeto.id == projeto_id,
+        Projeto.usuario_id == usuario.id
+    ).first()
 
-    if not projeto_db:
+    if not projeto:
         raise HTTPException(status_code=404, detail="Projeto não encontrado")
 
-    #  VERIFICAÇÃO DE DONO
-    if projeto_db.usuario_id != usuario.id:
-        raise HTTPException(status_code=403, detail="Acesso negado")
-
-    projeto_db.nome = projeto.nome
-    projeto_db.descricao = projeto.descricao
-    projeto_db.status = projeto.status
+    projeto.nome = dados.nome
+    projeto.descricao = dados.descricao
+    projeto.status = dados.status
 
     db.commit()
-    db.refresh(projeto_db)
-    return projeto_db
+    db.refresh(projeto)
 
+    return projeto
 
 @router.delete("/{projeto_id}")
 def deletar_projeto(
@@ -129,17 +126,17 @@ def deletar_projeto(
     usuario: Usuario = Depends(get_usuario_logado),
     db: Session = Depends(get_db)
 ):
-    projeto_db = db.query(Projeto).filter(Projeto.id == projeto_id).first()
+    projeto = db.query(Projeto).filter(
+        Projeto.id == projeto_id,
+        Projeto.usuario_id == usuario.id
+    ).first()
 
-    if not projeto_db:
+    if not projeto:
         raise HTTPException(status_code=404, detail="Projeto não encontrado")
 
-    #  VERIFICAÇÃO DE DONO
-    if projeto_db.usuario_id != usuario.id:
-        raise HTTPException(status_code=403, detail="Acesso negado")
-
-    db.delete(projeto_db)
+    db.delete(projeto)
     db.commit()
+
     return {"message": "Projeto deletado com sucesso"}
 
 @router.get("/debug/banco")
