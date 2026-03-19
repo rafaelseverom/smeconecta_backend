@@ -499,3 +499,8 @@ def get_teacher_by_id(id: int) -> Teacher | None:
         if teacher.id == id:
             return teacher
     return None
+
+def add_teacher(teacher):
+    # fake_teachers_db_base.append(teacher)
+    fake_teachers_db_complete.append(teacher)
+    return teacher

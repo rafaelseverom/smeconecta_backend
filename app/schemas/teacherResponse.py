@@ -27,4 +27,3 @@ class Teacher(BaseModel):
     funcao : str
     data_ativacao : date | None = None
     data_desativacao : date | None = None
-    

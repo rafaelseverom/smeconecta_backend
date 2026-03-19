@@ -13,6 +13,7 @@ from app.utils.pagination import paginate
 
 from app.core.database import get_teachers_from_DB
 from app.core.database import get_teacher_by_id
+from app.core.database import add_teacher
 
 
 #   Implementar rotas relacionada a usuários
@@ -34,6 +35,35 @@ router = APIRouter(prefix="/teacher", tags=["Teacher"])
 #             return i
         
 #     raise HTTPException(status_code=404, detail="Teacher not found")
+
+
+@router.post("/", response_model=Teacher, status_code=HTTPStatus.CREATED)
+def createTeacher(teacher: Teacher):
+
+    teachers_db = get_teachers_from_DB()
+
+    ##  Gerar ID automático  ##
+    new_id = max([t.id for t in teachers_db], default=0) + 1
+
+
+    ## Validações ##
+    ...
+    ##  #   ##
+    
+    new_teacher = Teacher(
+        id = new_id,
+        name = teacher.name,
+        cpf = teacher.cpf,
+        temporary = teacher.temporary,
+        outsource = teacher.outsource,
+        status = teacher.status,
+        funcao = teacher.funcao
+    )
+
+    add_teacher(new_teacher)
+
+    return new_teacher
+
 
 
 @router.get("/", response_model=Page[TeacherBase])
