@@ -25,18 +25,6 @@ router = APIRouter(prefix="/teacher", tags=["Teacher"])
 # PUT /teachers/{id}     → atualizar
 # DELETE /teachers/{id}  → deletar
 
-# GET /employees
-# @router.get("/{id}", response_model=TeacherBase)
-# def root(id: int):
-#     teachers_db = get_teachers_from_DB()
-
-#     for i in teachers_db:
-#         if i.id == id:
-#             return i
-        
-#     raise HTTPException(status_code=404, detail="Teacher not found")
-
-
 @router.post("/", response_model=Teacher, status_code=HTTPStatus.CREATED)
 def createTeacher(teacher: Teacher):
 
@@ -64,7 +52,32 @@ def createTeacher(teacher: Teacher):
 
     return new_teacher
 
+@router.put("/{id}")
+def editTeacher(id: int, teacher: Teacher):
 
+    teachers_db = get_teachers_from_DB()
+
+    for i, t in enumerate(teachers_db):
+
+        if t.id == id:
+
+            #update(id, teacher);
+            teachers_db[i] = Teacher(
+                id=id,
+                name=teacher.name,
+                cpf=teacher.cpf,
+                temporary=teacher.temporary,
+                outsource=teacher.outsource,
+                status=teacher.status,
+                funcao=teacher.funcao
+            )
+
+            return teachers_db[i]
+
+    raise HTTPException(
+        status_code=404,
+        detail="Professor não encontrado"
+    )
 
 @router.get("/", response_model=Page[TeacherBase])
 def listTeachers(
