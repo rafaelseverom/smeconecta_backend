@@ -1,12 +1,9 @@
-# ESTRUTURA DE CODIGOS DENTRO DO BANCO
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DateTime
 from sqlalchemy.orm import relationship
 from app.database import Base
-from sqlalchemy import Enum
 from app.core.enums import StatusProjeto
-from sqlalchemy import DateTime
 from datetime import datetime
-
+from app.models.associations import projeto_teacher
 
 
 class Projeto(Base):
@@ -28,4 +25,9 @@ class Projeto(Base):
     usuario_id = Column(Integer, ForeignKey("usuarios.id"))
     usuario = relationship("Usuario", back_populates="projetos")
 
-
+    # 🔗 RELACIONAMENTO N:N
+    teachers = relationship(
+        "Teacher",
+        secondary=projeto_teacher,
+        back_populates="projetos"
+    )
